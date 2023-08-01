@@ -1,104 +1,47 @@
-import { useEffect, useState } from 'react';
+import {BrowserRouter, Link, Routes, Route} from 'react-router-dom'
 import { styled } from 'styled-components';
-import './App.css';
+import Home from './Pages/Home';
+import FilmPage from './Pages/FilmPage';
+import Contact from './Pages/Contact';
+import { useEffect, useState } from 'react';
 
-function App() {
+const App = () => {
 
-  const [films, setFilms] = useState([]);
-  const [errorMessage, setErrorMessage] = useState("");
-  let [pageIsBlurred, setPageIsBlurred] = useState(false);
+    return (
+        <AppPage>
+            <BrowserRouter>
+                <NavBar className=''>
+                    <Link to="/">Home</Link>
+                    <Link to="/Contact">Contact</Link>
+                </NavBar>
+                <Routes>
+                    <Route path="/" element={<Home></Home>}></Route>
+                    <Route path="/FilmPage/:filmId" element={<FilmPage></FilmPage>}></Route>
+                    <Route path="/Contact" element={<Contact></Contact>}></Route>
+                </Routes>
 
-  const useEffectFunc = () => {
-    const retrieveData = async () => {
-      try {
-         const response = await fetch("https://ghibliapi.vercel.app/films");
-
-        if (response.ok === false) {
-          throw new Error("Error: Data not retrieved");
-        }
-
-        const data = await response.json();
-
-        data.map((film, index) => {
-          Object.assign(film, {modalIsHidden: true});
-        });
-
-        setFilms(data);
+                <footer>This is a footer</footer>
+            </BrowserRouter>
+        </AppPage>
 
 
-        console.log(response);
-        console.log(data);
-      } catch(err) {
-        setErrorMessage(err.message);
-        console.log(err.message);
-      }
-    };
-    retrieveData();
-  };
+    );
+}
 
-  useEffect(useEffectFunc, []);
-
-  const switchModalBool = (index) => {
-    setPageIsBlurred(!pageIsBlurred);
-    let tempArray = [...films];
-    tempArray[index].modalIsHidden = !tempArray[index].modalIsHidden;
-    setFilms(tempArray);
-
-  }
-
-  return (
-    <div className="App">
-      <h1 className='errorMessage'>{errorMessage}</h1>
-      {films.map((film, index) => {
-        return (
-            <div className='filmContainer' key={index}>
-
-              <div className={film.modalIsHidden ? 'modalContainer modalHidden' : 'modalContainer modalVisible'} onClick={() => switchModalBool(index)}>
-                <div className='modalWrapper'>
-                  <h1 className='modalFilmTitle'>{film.title}</h1>
-                  <img className='modalFilmImage' src={film.image}></img>
-                  <p className='filmDirector'>Director: {film.director}</p>
-                  <p className='filmOriginalTitle'>Original Title: {film.original_title} ({film.original_title_romanised})</p>
-                  <p className='filmProducer'>Producer: {film.producer}</p>
-                  <p className='filmReleaseDate'>ReleaseDate: {film.release_date}</p>
-                  <p className='filmRTScore'>Rotten Tomatoes Score: {film.rt_score}/100</p>
-                  <p className='filmRunTime'>Run Time: {film.running_time} minutes</p>
-                </div>
-
-              </div>
-
-              <div className={pageIsBlurred ? 'filmWrapper blur' : 'filmWrapper'} onClick={() => switchModalBool(index)}>
-                <h1 className='filmTitle'>{film.title}</h1>
-                <img className='filmImage' src={film.image}></img>
-                <p className='filmDescription'>{film.description}</p>
-              </div>
-            </div>
-        )
-      })}
-    </div>
-  );
-};
-
-export default App;
-
-  const FilmContainer = styled.div`
+const AppPage = styled.nav`
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-color: rgba(0, 255, 255, 0.133);
-  `;
+`;
 
-  // useEffect(() => {
-  //   const retrieveData = async () => {
-  //     const response = await fetch("https://ghibliapi.vercel.app/films");
+const NavBar = styled.nav`
+    display: flex;
+    
+    width: 50%;
+    
+    align-items: space-between;
+    justify-content: space-around;
+    
+`;
 
-  //     const data = await response.json();
-
-  //     setFilms(data);
-
-  //     console.log(data);
-  //   };
-  //   retrieveData()
-  //   }, []);
-  
-  // <p>{films[0]?.id} = id</p>
+export default App;
